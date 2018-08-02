@@ -1,0 +1,5 @@
+-name wacko_ws@localhost
+-setcookie erlang
+
++K true
++A30
