@@ -24,18 +24,32 @@ stop(_State) ->
 %% Initialise and print out useful information
 init_wacko() ->
     Env = application:get_all_env(wacko),
-    set_controller_dir(Env),
+    set_project_dir(Env),
+    set_port(Env),
     code:add_path(filename:join([code:priv_dir(wacko), "controllers"])).
 
-set_controller_dir(Env) ->
-    Opt = case lists:keyfind(controller_dir, 1, Env) of
+set_project_dir(Env) ->
+    Opt = case lists:keyfind(project_dir, 1, Env) of
               false   -> default;
               {_K, V} -> V
           end,
     
     Dir = case filelib:is_dir(Opt) of
-              true  -> Opt;
-              false -> filename:join([code:priv_dir(wacko), "controllers"])
+              true  -> filename:absname(Opt);
+              false -> filename:absname(code:priv_dir(wacko))
           end,
 
-    io:format("Set Controller Dir to: ~s~n", [Dir]).
+    io:format("Set Project Dir to: ~s~n", [Dir]),
+    io:format("    - Controller Dir: ~s/controllers~n", [Dir]),
+    io:format("    - View Dir: ~s/views~n", [Dir]),
+    io:format("    - Assets Dir: ~s/assets~n", [Dir]).
+
+set_port(Env) ->
+    Port = case lists:keyfind(port, 1, Env) of
+               false         -> 8001;
+               {_K, default} -> 8001;
+               {_K, V} -> V
+           end,
+
+    io:format("Set Port to: ~p~n", [Port]).
+

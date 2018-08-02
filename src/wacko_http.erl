@@ -20,15 +20,19 @@
          bad_request_html/1
         ]).
 
--define(PORT, 8001).
-
 %% ============ %%
 %% Init Stuff   %%
 %% ============ %%
 start_link() ->
     psycho_mime:init(),
     App = create_app(),
-    psycho_server:start_link(?PORT, App).
+    % TODO: nicer way of accessing port from sysconfig
+    Port = case lists:keyfind(port, 1, application:get_all_env(wacko)) of
+               false   -> 8001;
+               {_K, default} -> 8001;
+               {_K, V} -> V
+           end,
+    psycho_server:start_link(Port, App).
 
 create_app() ->
     psycho_route:create_app(routes()).
