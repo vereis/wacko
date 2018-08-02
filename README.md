@@ -1,7 +1,7 @@
 # wacko
 Wacko is another Erlang web framework built ontop of Psycho which you can find [here](https://github.com/gar1t/psycho).
 
-As of now, and probably forever, Wacko should not be used for anything serious. Wacko is just the result of me playing around with Psycho and wanting to build an extremely simplistic yet flexible web framework.
+Wacko is not a piece of software made to be used for anything serious and is the result of playing around and experimentation.
 
 ## Current Features
 As of now, there the bare minimum of features have been implemented:
@@ -11,15 +11,14 @@ As of now, there the bare minimum of features have been implemented:
 - Automatically fetching request bodies, further abstracting from Psycho
 
 ## Usage Instructions
-I'm not entirely too sure how best to package this, but for the meantime, running this via ```rebar3 shell``` works fine.
+Right now, Wacko is hardcoded to run on port 8001. After starting Wacko with ```rebar3 compile && rebar3 shell``` in your console, you should be able to navigate to ```localhost:8001```.
 
-Static assets are stored under ```/priv/assets/```. Any request to some url such as ```http://something.com/assets/something.png``` will just be returned by Wacko.
+Static assets are stored under ```/priv/assets/```. Any request to some url such as ```localhost:8001/assets/something.png``` will just therefore simply be served up by Wacko.
 
-### Responding to requests
-Otherwise, all other requests will be routed to functions in the specified controllers. The rules for controller routing are below:
-- A request such as ```http://something.com/``` will be routed to the controller ```priv/controllers/index.erl``` and the function ```index:index/3``` will be invoked. Such a function should have the type signature ```index("GET", Env, Args)``` for instance, where we perform pattern matching on any GET requests to that URL.
-- A request such as ```http://something.com/controller``` will be routed to the controller ```priv/controllers/controller.erl```, and the function, just like in the base case, ```controller:index/3``` will be envoked.
-- A request such as ```http://something.com/controller/function``` will be routed to the controller ```priv/controllers/controller.erl```, and the function ```controller:function/3``` will be invoked.
+Any other routes will be routed to a controller, and then a function as follows:
+- A request such as ```localhost:8001``` will be routed to the controller ```priv/controllers/index.erl``` and the function ```index:index/3``` will be invoked. Such a function should have the type signature ```index("GET", Env, Args)``` for instance, where we perform pattern matching on any GET requests to that URL.
+- A request such as ```localhost:8001/${controller}``` will be routed to the controller ```priv/controllers/${controller}.erl```, and the function, just like in the base case, ```${controller}:index/3``` will be envoked.
+- A request such as ```localhost:8001/${controller}/${function}``` will be routed to the controller ```priv/controllers/${controller}.erl```, and the function ```${controller}:${function}/3``` will be invoked.
 - Any other URI segments will be stored as arguments to be provided as the final parameter of the envoked function.
 
 If a particular function is not expected any request body, then it is of arity 3 with the function signature ```function(Method, Env, Args)``` where the Method is the HTTP method (i.e. ```GET```, ```POST``` etc), Env is data associated with the request, containing things such as the request headers, and Args is a list of other URL slugs which made up the request.
@@ -39,4 +38,8 @@ Views are stored in ```priv/views``` and currently, nothing special is done with
 Most common functions are exported by ```src/wacko.erl``` which simply acts as an interface for other modules. I'm unsure if this is great practice but as a result do look at the exports list of that file to figure anything else out :-)
 
 ## Upcoming Features
-I'm entirely unsure of what features to implement, so please do give me any suggestions if you have any.
+- Configuration file, either through rebar3 mechanisms or a custom config file, allowing us to customise port as well as project directory if ```priv/``` is unsuitable.
+- Logging intergration and metrics
+- Clean up code surrounding intercepting requests which need to be dispatched to arity 4 controller functions.
+- Permissions for assets?
+- Ability to use Wacko as an application in another OTP project, instead of having to run wacko as part of a site wacko is supposed to be hosting.
