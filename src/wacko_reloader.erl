@@ -3,7 +3,7 @@
 -export([reload_controller/1]).
 
 reload_controller(Module) ->
-    ModuleSrc = filename:join([code:priv_dir(wacko), "controllers", [Module, ".erl"]]),
+    ModuleSrc = filename:join([wacko:controller_dir(), [Module, ".erl"]]),
     case controller_has_updated(Module, ModuleSrc) of
         false -> 
             ok;
