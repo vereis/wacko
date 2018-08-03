@@ -13,7 +13,7 @@ fetch(View) ->
                    true -> [View, ".html"];
                    _    -> View
                end,
-    Filepath = filename:join([code:priv_dir(wacko), "views", Filename]),
+    Filepath = filename:join([wacko:view_dir(), Filename]),
     case filelib:is_regular(Filepath) of 
         true -> {ok, Page} = file:read_file(Filepath),
                 Page;
