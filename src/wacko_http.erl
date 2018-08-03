@@ -27,12 +27,7 @@ start_link() ->
     psycho_mime:init(),
     App = create_app(),
     % TODO: nicer way of accessing port from sysconfig
-    Port = case lists:keyfind(port, 1, application:get_all_env(wacko)) of
-               false   -> 8001;
-               {_K, default} -> 8001;
-               {_K, V} -> V
-           end,
-    psycho_server:start_link(Port, App).
+    psycho_server:start_link(wacko:port(), App).
 
 create_app() ->
     psycho_route:create_app(routes()).
@@ -46,7 +41,7 @@ routes() ->
     ].
 
 load_static_asset() ->
-    psycho_static:create_app(code:priv_dir(wacko)).
+    psycho_static:create_app(wacko:project_dir()).
 
 load_controller() ->
     psycho_util:dispatch_app({?MODULE, handle}, [method, split_path, env]).

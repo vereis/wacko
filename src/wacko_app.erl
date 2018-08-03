@@ -23,10 +23,14 @@ stop(_State) ->
 
 %% Initialise and print out useful information
 init_wacko() ->
+    init_ets(),
+    code:add_path(wacko:controller_dir()).
+
+init_ets() ->
+    ets:new(globals, [set, named_table]),
     Env = application:get_all_env(wacko),
     set_project_dir(Env),
-    set_port(Env),
-    code:add_path(filename:join([code:priv_dir(wacko), "controllers"])).
+    set_port(Env).
 
 set_project_dir(Env) ->
     Opt = case lists:keyfind(project_dir, 1, Env) of
@@ -39,10 +43,19 @@ set_project_dir(Env) ->
               false -> filename:absname(code:priv_dir(wacko))
           end,
 
-    io:format("Set Project Dir to: ~s~n", [Dir]),
-    io:format("    - Controller Dir: ~s/controllers~n", [Dir]),
-    io:format("    - View Dir: ~s/views~n", [Dir]),
-    io:format("    - Assets Dir: ~s/assets~n", [Dir]).
+    CtrlDir = [Dir, "/controllers"],
+    ViewDir = [Dir, "/views"],
+    AsstDir = [Dir, "/assets"],
+
+    ets:insert_new(globals, {projdir, Dir}),
+    ets:insert_new(globals, {ctrldir, CtrlDir}),
+    ets:insert_new(globals, {viewdir, ViewDir}),
+    ets:insert_new(globals, {asstdir, AsstDir}),
+
+    io:format("Set Project Dir to:   ~s~n", [Dir]),
+    io:format("    - Controller Dir: ~s~n", [CtrlDir]),
+    io:format("    - View Dir:       ~s~n", [ViewDir]),
+    io:format("    - Assets Dir:     ~s~n", [AsstDir]).
 
 set_port(Env) ->
     Port = case lists:keyfind(port, 1, Env) of
@@ -50,6 +63,8 @@ set_port(Env) ->
                {_K, default} -> 8001;
                {_K, V} -> V
            end,
+
+    ets:insert(globals, {port, Port}),
 
     io:format("Set Port to: ~p~n", [Port]).
 
