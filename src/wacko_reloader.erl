@@ -20,8 +20,8 @@ controller_has_updated(Module, ModuleSrc) ->
         false -> 
             {err, {no_file, [Module, ".erl"]}};
         true  ->
-            code:load_file(Module),
-            BeamTime = 
+           code:ensure_loaded(Module),
+           BeamTime = 
                 case code:which(Module) of
                     non_existing -> {{0, 1, 1}, {0, 0, 0}};
                     ModuleBeam   -> filelib:last_modified(ModuleBeam)
