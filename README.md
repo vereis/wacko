@@ -25,6 +25,11 @@ If a particular function is not expected any request body, then it is of arity 3
 
 If a particular function does contain a request body though, Wacko will envoke an arity 4 function instead, with the signature ```function(Method, Env, RequestBody, Args)```. Wacko decides this by looking for a non-zero ```content_length``` sent in the request header.
 
+## Configuration
+You can change the default port which Psycho is bound to by changing or providing a tuple in the form of ```{port, Integer()}``` under Wacko's ```sys.config``` file which by default is found in ```./config/sys.config```.
+
+Likewise, you can change the project location which ought to contain your ```controller/```, ```assets/``` and ```model/``` directories by providing or changing a tuple in the form of ```{project_dir, Filename()}```.
+
 ### Returning a response
 Ultimately, controllers need to return headers when complete which will then get sent back to the requester. These are in the form ```{{HTTP_CODE, HTTP_CODE_DESCRIPTION}, RESPONSE_HEADERS, RESPONSE_BODY}```. Wacko provides utility functions to automatically generate common responses as listed below:
 - ```wacko:ok_html(Document)``` where document is the contents of the HTML document intended to be returned to the requester. This function sets the content_type to "text/html" and responds with a {200, ok} HTTP code. Variants for sending 404 and 400 errors also exist as ```wacko:not_found_html(Document)``` and ```wacko:bad_request_html(Document)``` respectively.

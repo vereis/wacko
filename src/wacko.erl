@@ -13,7 +13,13 @@
          fetch_view/1,
          
          json_encode/1,
-         json_decode/1
+         json_decode/1,
+
+         controller_dir/0,
+         view_dir/0,
+         asset_dir/0,
+         project_dir/0,
+         port/0
         ]).
 
 %%% This module is essentially just a facade to make calling certain functions easier
@@ -62,3 +68,23 @@ json_decode(Thing) ->
     jsone:decode(Thing).
 
 
+%%% Getting useful directories
+controller_dir() ->
+    [{_K, V}] = ets:lookup(globals, ctrldir),
+    lists:flatten(V).
+
+view_dir() ->
+    [{_K, V}] = ets:lookup(globals, viewdir),
+    lists:flatten(V).
+
+asset_dir() ->
+    [{_K, V}] = ets:lookup(globals, asstdir),
+    lists:flatten(V).
+
+project_dir() ->
+    [{_K, V}] = ets:lookup(globals, projdir),
+    lists:flatten(V).
+
+port() ->
+    [{_K, V}] = ets:lookup(globals, port),
+    V.

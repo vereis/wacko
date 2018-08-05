@@ -20,15 +20,14 @@
          bad_request_html/1
         ]).
 
--define(PORT, 8001).
-
 %% ============ %%
 %% Init Stuff   %%
 %% ============ %%
 start_link() ->
     psycho_mime:init(),
     App = create_app(),
-    psycho_server:start_link(?PORT, App).
+    % TODO: nicer way of accessing port from sysconfig
+    psycho_server:start_link(wacko:port(), App).
 
 create_app() ->
     psycho_route:create_app(routes()).
@@ -42,7 +41,7 @@ routes() ->
     ].
 
 load_static_asset() ->
-    psycho_static:create_app(code:priv_dir(wacko)).
+    psycho_static:create_app(wacko:project_dir()).
 
 load_controller() ->
     psycho_util:dispatch_app({?MODULE, handle}, [method, split_path, env]).
