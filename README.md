@@ -11,9 +11,25 @@ As of now, there the bare minimum of features have been implemented:
 - Automatically fetching request bodies, further abstracting from Psycho
 
 ## Usage Instructions
-Right now, Wacko is hardcoded to run on port 8001. After starting Wacko with ```rebar3 compile && rebar3 shell``` in your console, you should be able to navigate to ```localhost:8001```.
+If you want to just built atop Wacko, you can simply perform a ```git clone``` of this repo and start building stuff! Otherwise you can pull Wacko as a dependency by adding it to your ```rebar.config``` file in a typical rebar3 project.
 
-Static assets are stored under ```/priv/assets/```. Any request to some url such as ```localhost:8001/assets/something.png``` will just therefore simply be served up by Wacko.
+By default, Wacko runs on port 8001 but this can be configured via sys.config as follows:
+
+```erlang
+[{wacko, [
+    {port, default} % replace this with any valid port such as 8080, 443 or whatever you need.
+]}].
+```
+
+As well as configuring the port Wacko runs on, Wacko's project directly (by default ```$WACKO_DIR/priv```) can be configured with via:
+
+```erlang
+[{wacko, [
+    {project_dir, default} % replace this with a valid filename string
+]}].
+```
+
+By default, static assets are stored under ```/priv/assets/```. Any request to some url such as ```localhost:8001/assets/something.png``` will just therefore simply be served up by Wacko.
 
 Any other routes will be routed to a controller, and then a function as follows:
 - A request such as ```localhost:8001``` will be routed to the controller ```priv/controllers/index.erl``` and the function ```index:index/3``` will be invoked. Such a function should have the type signature ```index("GET", Env, Args)``` for instance, where we perform pattern matching on any GET requests to that URL.
@@ -25,10 +41,7 @@ If a particular function is not expected any request body, then it is of arity 3
 
 If a particular function does contain a request body though, Wacko will envoke an arity 4 function instead, with the signature ```function(Method, Env, RequestBody, Args)```. Wacko decides this by looking for a non-zero ```content_length``` sent in the request header.
 
-## Configuration
-You can change the default port which Psycho is bound to by changing or providing a tuple in the form of ```{port, Integer()}``` under Wacko's ```sys.config``` file which by default is found in ```./config/sys.config```.
-
-Likewise, you can change the project location which ought to contain your ```controller/```, ```assets/``` and ```model/``` directories by providing or changing a tuple in the form of ```{project_dir, Filename()}```.
+If the project dir isn't set to ```default``` or ```$WACKO_DIR/priv``` then the instructions above still apply, just relative to the project directory instead of the ```priv/``` directory.
 
 ### Returning a response
 Ultimately, controllers need to return headers when complete which will then get sent back to the requester. These are in the form ```{{HTTP_CODE, HTTP_CODE_DESCRIPTION}, RESPONSE_HEADERS, RESPONSE_BODY}```. Wacko provides utility functions to automatically generate common responses as listed below:
@@ -43,8 +56,6 @@ Views are stored in ```priv/views``` and currently, nothing special is done with
 Most common functions are exported by ```src/wacko.erl``` which simply acts as an interface for other modules. I'm unsure if this is great practice but as a result do look at the exports list of that file to figure anything else out :-)
 
 ## Upcoming Features
-- Configuration file, either through rebar3 mechanisms or a custom config file, allowing us to customise port as well as project directory if ```priv/``` is unsuitable.
 - Logging intergration and metrics
 - Clean up code surrounding intercepting requests which need to be dispatched to arity 4 controller functions.
 - Permissions for assets?
-- Ability to use Wacko as an application in another OTP project, instead of having to run wacko as part of a site wacko is supposed to be hosting.
