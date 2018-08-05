@@ -13,6 +13,8 @@ As of now, there the bare minimum of features have been implemented:
 ## Usage Instructions
 If you want to just built atop Wacko, you can simply perform a ```git clone``` of this repo and start building stuff! Otherwise you can pull Wacko as a dependency by adding it to your ```rebar.config``` file in a typical rebar3 project.
 
+For now, Wacko is best run via ```rebar3 shell```. While Wacko *can* be made into a release (or added as a dependency of a release) there are some relative path issues with Wacko's directory settings. This can be fixed by using absolute filepaths for the project_dir.
+
 By default, Wacko runs on port 8001 but this can be configured via sys.config as follows:
 
 ```erlang
